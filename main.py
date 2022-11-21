@@ -41,7 +41,3 @@ ans.data["real_patients"] = [int(i) for i in real_patients]
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
 print(ans.data)
 ans.drawGraph()
-
-# print(ans.getItem("susceptible"))
-# # ans.drawOne(real)
-# ans.drawGraph()
