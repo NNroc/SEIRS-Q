@@ -25,7 +25,7 @@ patients = []
 file = os.getcwd()
 
 # 获取 西安 单元格数据
-filename = file + '\\xian.csv'
+filename = file + '\\西安.csv'
 for i in range(1, 20):
     row = obj_sheet.row_values(i)
     date = xlrd2.xldate_as_tuple(obj_sheet.cell_value(i, 0), readfile.datemode)

@@ -110,24 +110,25 @@ class SEIRQD:
                                               + self.data["quarantine_s"][indx + 1]
                                               + self.data["quarantine_a"][indx + 1])
 
-    def train(self):
-        # self.beta_is = 0.001
-        # self.beta_ia = 0.028
-
-        loss_val_min = float('inf')
-        for beta_is in np.arange(0.001, 0.400, 0.001):
-            for beta_ia in np.arange(0.001, 0.400, 0.001):
-                loss_val = getLoss(copy.deepcopy(self.data), self.a, self.time, self.real_patients,
-                                   r_is=self.r_is, r_ia=self.r_ia, beta_is=beta_is, beta_ia=beta_ia,
-                                   t=self.t, alpha=self.alpha, i=self.i, c=self.c,
-                                   theta_s=self.theta_s, theta_a=self.theta_a,
-                                   gamma_s1=self.gamma_s1, gamma_a1=self.gamma_a1, gamma_u=self.gamma_u, p=self.p,
-                                   m=self.m)
-                if loss_val_min > loss_val:
-                    loss_val_min = loss_val
-                    self.beta_is = beta_is
-                    self.beta_ia = beta_ia
-                    print(self.beta_is, self.beta_ia, loss_val)
+    def train(self, beta_is=None, beta_ia=None):
+        if beta_is is None or beta_ia is None:
+            loss_val_min = float('inf')
+            for beta_is in np.arange(0.001, 0.400, 0.001):
+                for beta_ia in np.arange(0.001, 0.400, 0.001):
+                    loss_val = getLoss(copy.deepcopy(self.data), self.a, self.time, self.real_patients,
+                                       r_is=self.r_is, r_ia=self.r_ia, beta_is=beta_is, beta_ia=beta_ia,
+                                       t=self.t, alpha=self.alpha, i=self.i, c=self.c,
+                                       theta_s=self.theta_s, theta_a=self.theta_a,
+                                       gamma_s1=self.gamma_s1, gamma_a1=self.gamma_a1, gamma_u=self.gamma_u, p=self.p,
+                                       m=self.m)
+                    if loss_val_min > loss_val:
+                        loss_val_min = loss_val
+                        self.beta_is = beta_is
+                        self.beta_ia = beta_ia
+                        print(self.beta_is, self.beta_ia, loss_val)
+        else:
+            self.beta_is = beta_is
+            self.beta_ia = beta_ia
 
         self.r_beta_is = self.r_is * self.beta_is
         self.r_beta_ia = self.r_ia * self.beta_ia
@@ -158,7 +159,7 @@ class SEIRQD:
         # 设置日期的显示格式
         date_format = mpl.dates.DateFormatter("%m-%d")
         ax.xaxis.set_major_formatter(date_format)
-        plt.show()
+        plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
 
     def loss(self):
         loss_val = 0

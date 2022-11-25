@@ -2,9 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import argparse
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 from model.SEIRQD import SEIRQD
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--city_name', type=str, default='西安', help='To predict the urban epidemic information by name')
+args = parser.parse_args()
 
 seir_data_xian = {
     "n": 13163000.0,  # 该城市人口总数
@@ -23,7 +28,8 @@ seir_data_xian = {
 }
 
 # 开始运行
-real = pd.read_csv("data/xian.csv", encoding='utf-8')
+city_name = args.city_name
+real = pd.read_csv("data/" + city_name + ".csv", encoding='utf-8')
 names = ["date", "population shift", "patients"]
 population_shift = np.array(real['population shift'])
 population_shift = [float(i) for i in population_shift]
@@ -34,10 +40,10 @@ ans = SEIRQD(seir_data_xian, population_shift, time, real_patients,
              r_is=20.0, r_ia=40.0, beta_is=0.046, beta_ia=0.023,
              t=1.0, alpha=4.4, i=3.0, c=0.4,
              theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064)
-ans.train()
+ans.train(0.001, 0.043)
 
 # 看看结果
 ans.data["real_patients"] = [int(i) for i in real_patients]
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-print(ans.data)
+# print(ans.data)
 ans.drawGraph()
