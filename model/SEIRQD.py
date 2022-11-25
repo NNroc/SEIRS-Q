@@ -106,9 +106,7 @@ class SEIRQD:
             self.data["recovered"].append(float(recovered))
             self.data["dead"].append(float(dead))
 
-            self.data["predict_total"].append(self.data["infectious_s"][indx + 1]
-                                              + self.data["infectious_a"][indx + 1]
-                                              + self.data["infectious_u"][indx + 1]
+            self.data["predict_total"].append(self.data["infectious_u"][indx + 1]
                                               + self.data["quarantine_s"][indx + 1]
                                               + self.data["quarantine_a"][indx + 1])
 
