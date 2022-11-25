@@ -2,7 +2,7 @@ import xlrd2
 import os
 import datetime
 
-readfile = xlrd2.open_workbook(r"D:\code\github\SEIR-QD\data\天津西安OD数据-交付.xlsx")
+readfile = xlrd2.open_workbook(r"D:\code\github\SEIR-QD\data\天津西安OD数据.xlsx")
 print(readfile)
 
 # 获取sheet名称
