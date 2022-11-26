@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 from model.SEIRQD import SEIRQD
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--city_name', type=str, default='西安', help='To predict the urban epidemic information by name')
+parser.add_argument('--city_name', type=str, default='xian', help='To predict the urban epidemic information by name')
 args = parser.parse_args()
 
 seir_data_xian = {
