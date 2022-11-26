@@ -159,13 +159,13 @@ class SEIRQD:
         # 设置日期的显示格式
         date_format = mpl.dates.DateFormatter("%m-%d")
         ax.xaxis.set_major_formatter(date_format)
-        plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
+        plt.savefig('./getdata/result_{}.png'.format(self.data["city_name"]))
 
     def loss(self):
         loss_val = 0
         # for num in range(len(self.real_patients)):
-        #     print(loss_val, np.sqrt(np.mean((self.data["predict_total"][num] - self.real_patients[num]) ** 2)))
-        #     loss_val = loss_val + np.sqrt(np.mean((self.data["predict_total"][num] - self.real_patients[num]) ** 2))
+        #     print(loss_val, np.sqrt(np.mean((self.getdata["predict_total"][num] - self.real_patients[num]) ** 2)))
+        #     loss_val = loss_val + np.sqrt(np.mean((self.getdata["predict_total"][num] - self.real_patients[num]) ** 2))
 
         loss_val = np.sqrt(np.mean((self.data["predict_total"] - self.real_patients) ** 2))
         return loss_val

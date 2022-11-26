@@ -7,12 +7,12 @@
 #
 #
 # class SEIRQD:
-#     def __init__(self, data: dict, a: dict, time: dict, real_patients: dict,
+#     def __init__(self, getdata: dict, a: dict, time: dict, real_patients: dict,
 #                  r_is=20, r_ia=40, beta_is=0.05, beta_ia=0.025,
 #                  t=1.0, alpha=4.4, i=3.0, c=0.4,
 #                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064):
 #         """
-#         :param data: SEIR
+#         :param getdata: SEIR
 #         :param a: 人口净流动量 原始数据集
 #         :param time: 时间
 #         :param real_patients: 真实病例数
@@ -32,7 +32,7 @@
 #         :param p: 中轻度患者重症率 15%
 #         :param m: 重症患者死亡率 6.4%
 #         """
-#         self.data = data
+#         self.getdata = getdata
 #         self.a = a
 #         self.time = time
 #         self.real_patients = real_patients
@@ -58,59 +58,59 @@
 #     def run(self):
 #         for indx in range(len(self.time) - 1):
 #             # 易感者
-#             susceptible = - (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
-#                              + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
-#                           self.data["n"] + self.t * self.a[indx] \
-#                           + self.data["susceptible"][indx]
+#             susceptible = - (self.r_beta_is * self.getdata["susceptible"][indx] * self.getdata["infectious_s"][indx]
+#                              + self.r_beta_ia * self.getdata["susceptible"][indx] * self.getdata["infectious_a"][indx]) / \
+#                           self.getdata["n"] + self.t * self.a[indx] \
+#                           + self.getdata["susceptible"][indx]
 #             # 暴露者
-#             exposed = (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
-#                        + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
-#                       self.data["n"] - self.data["exposed"][indx] / self.alpha + (1.0 - self.t) * self.a[indx] \
-#                       + self.data["exposed"][indx]
+#             exposed = (self.r_beta_is * self.getdata["susceptible"][indx] * self.getdata["infectious_s"][indx]
+#                        + self.r_beta_ia * self.getdata["susceptible"][indx] * self.getdata["infectious_a"][indx]) / \
+#                       self.getdata["n"] - self.getdata["exposed"][indx] / self.alpha + (1.0 - self.t) * self.a[indx] \
+#                       + self.getdata["exposed"][indx]
 #             # 感染者 中轻度患者
-#             infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
-#                            - self.theta_s * self.data["infectious_s"][indx] / self.i \
-#                            + self.data["infectious_s"][indx]
+#             infectious_s = self.c * self.getdata["exposed"][indx] / self.alpha \
+#                            - self.theta_s * self.getdata["infectious_s"][indx] / self.i \
+#                            + self.getdata["infectious_s"][indx]
 #             # 感染者 无症状患者
-#             infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
-#                            - self.theta_a * self.data["infectious_a"][indx] / self.i \
-#                            + self.data["infectious_s"][indx] \
-#                            + self.data["infectious_a"][indx]
+#             infectious_a = (1.0 - self.c) * self.getdata["exposed"][indx] / self.alpha \
+#                            - self.theta_a * self.getdata["infectious_a"][indx] / self.i \
+#                            + self.getdata["infectious_s"][indx] \
+#                            + self.getdata["infectious_a"][indx]
 #             # 感染者 重症状患者
-#             infectious_u = self.p * self.data["quarantine_s"][indx] \
-#                            - self.data["infectious_u"][indx] / self.gamma_u - self.m * self.data["infectious_u"][indx] \
-#                            + self.data["infectious_u"][indx]
+#             infectious_u = self.p * self.getdata["quarantine_s"][indx] \
+#                            - self.getdata["infectious_u"][indx] / self.gamma_u - self.m * self.getdata["infectious_u"][indx] \
+#                            + self.getdata["infectious_u"][indx]
 #             # 感染者 中轻度隔离患者
-#             quarantine_s = self.theta_s * self.data["infectious_s"][indx] / self.i \
-#                            - self.p * self.data["quarantine_s"][indx] - self.data["quarantine_s"][indx] / self.gamma_s1 \
-#                            + self.data["quarantine_s"][indx]
+#             quarantine_s = self.theta_s * self.getdata["infectious_s"][indx] / self.i \
+#                            - self.p * self.getdata["quarantine_s"][indx] - self.getdata["quarantine_s"][indx] / self.gamma_s1 \
+#                            + self.getdata["quarantine_s"][indx]
 #             # 感染者 无症状隔离患者
-#             quarantine_a = self.theta_a * self.data["infectious_a"][indx] / self.i \
-#                            - self.data["quarantine_a"][indx] / self.gamma_a1 \
-#                            + self.data["quarantine_a"][indx]
+#             quarantine_a = self.theta_a * self.getdata["infectious_a"][indx] / self.i \
+#                            - self.getdata["quarantine_a"][indx] / self.gamma_a1 \
+#                            + self.getdata["quarantine_a"][indx]
 #             # 康复者
-#             recovered = self.data["infectious_u"][indx] / self.gamma_u \
-#                         + self.data["quarantine_s"][indx] / self.gamma_s1 \
-#                         + self.data["quarantine_a"][indx] / self.gamma_a1 \
-#                         + self.data["recovered"][indx]
+#             recovered = self.getdata["infectious_u"][indx] / self.gamma_u \
+#                         + self.getdata["quarantine_s"][indx] / self.gamma_s1 \
+#                         + self.getdata["quarantine_a"][indx] / self.gamma_a1 \
+#                         + self.getdata["recovered"][indx]
 #             # 死亡者
-#             dead = self.m * self.data["infectious_u"][indx] + self.data["dead"][indx]
+#             dead = self.m * self.getdata["infectious_u"][indx] + self.getdata["dead"][indx]
 #
-#             self.data["susceptible"].append(float(susceptible))
-#             self.data["exposed"].append(float(exposed))
-#             self.data["infectious_s"].append(float(infectious_s))
-#             self.data["infectious_a"].append(float(infectious_a))
-#             self.data["infectious_u"].append(float(infectious_u))
-#             self.data["quarantine_s"].append(float(quarantine_s))
-#             self.data["quarantine_a"].append(float(quarantine_a))
-#             self.data["recovered"].append(float(recovered))
-#             self.data["dead"].append(float(dead))
+#             self.getdata["susceptible"].append(float(susceptible))
+#             self.getdata["exposed"].append(float(exposed))
+#             self.getdata["infectious_s"].append(float(infectious_s))
+#             self.getdata["infectious_a"].append(float(infectious_a))
+#             self.getdata["infectious_u"].append(float(infectious_u))
+#             self.getdata["quarantine_s"].append(float(quarantine_s))
+#             self.getdata["quarantine_a"].append(float(quarantine_a))
+#             self.getdata["recovered"].append(float(recovered))
+#             self.getdata["dead"].append(float(dead))
 #
-#             self.data["predict_total"].append(self.data["infectious_s"][indx + 1]
-#                                               + self.data["infectious_a"][indx + 1]
-#                                               + self.data["infectious_u"][indx + 1]
-#                                               + self.data["quarantine_s"][indx + 1]
-#                                               + self.data["quarantine_a"][indx + 1])
+#             self.getdata["predict_total"].append(self.getdata["infectious_s"][indx + 1]
+#                                               + self.getdata["infectious_a"][indx + 1]
+#                                               + self.getdata["infectious_u"][indx + 1]
+#                                               + self.getdata["quarantine_s"][indx + 1]
+#                                               + self.getdata["quarantine_a"][indx + 1])
 #
 #             print("----------")
 #             print("seir:", infectious_s + infectious_a + infectious_u + quarantine_s + quarantine_a)
@@ -121,7 +121,7 @@
 #         beta_ia = self.beta_ia
 #         optimal = minimize(loss, [beta_is, beta_ia],
 #                            # beta_is 和 beta_ia 就可以不要了
-#                            args=(self.real_patients, self.data, self.a, self.r_is, self.r_ia,
+#                            args=(self.real_patients, self.getdata, self.a, self.r_is, self.r_ia,
 #                                  # self.beta_is, self.beta_ia,
 #                                  self.t, self.alpha, self.i, self.c,
 #                                  self.theta_s, self.theta_a, self.gamma_s1, self.gamma_a1, self.gamma_u,
@@ -136,7 +136,7 @@
 #         self.run()
 #
 #     def getItem(self, item: str):
-#         return self.data[item]
+#         return self.getdata[item]
 #
 #     def drawOne(self, real=None, size=(8, 5), dpi=100):
 #         sns.set()
@@ -144,17 +144,17 @@
 #         plt.figure(figsize=size, dpi=dpi)
 #
 #         if real is not None:
-#             data = pd.DataFrame({
-#                 "I": self.data["I"],
+#             getdata = pd.DataFrame({
+#                 "I": self.getdata["I"],
 #                 "real":
 #                     np.array((real["asymptomatic_cumulative"] + real["cumulative_diagnosis"])).reshape(1, -1).tolist()[
 #                         0][::-1][:-1]
 #             })
 #         else:
-#             data = pd.DataFrame({
-#                 "I": self.data["I"],
+#             getdata = pd.DataFrame({
+#                 "I": self.getdata["I"],
 #             })
-#         sns.lineplot(data=data)
+#         sns.lineplot(getdata=getdata)
 #
 #     def drawGraph(self, size=(8, 5), dpi=200):
 #         sns.set()
@@ -168,18 +168,18 @@
 #         # edgecolor: 边框颜色
 #         # frameon: 是否显示边框
 #         plt.figure(figsize=size, dpi=dpi)
-#         data = pd.DataFrame({
-#             "susceptible": self.data["susceptible"], "exposed": self.data["exposed"],
-#             "infectious_s": self.data["infectious_s"], "infectious_a": self.data["infectious_a"],
-#             "infectious_u": self.data["infectious_u"], "quarantine_s": self.data["quarantine_s"],
-#             "quarantine_a": self.data["quarantine_a"], "recovered": self.data["recovered"],
-#             "dead": self.data["dead"]
+#         getdata = pd.DataFrame({
+#             "susceptible": self.getdata["susceptible"], "exposed": self.getdata["exposed"],
+#             "infectious_s": self.getdata["infectious_s"], "infectious_a": self.getdata["infectious_a"],
+#             "infectious_u": self.getdata["infectious_u"], "quarantine_s": self.getdata["quarantine_s"],
+#             "quarantine_a": self.getdata["quarantine_a"], "recovered": self.getdata["recovered"],
+#             "dead": self.getdata["dead"]
 #         })
-#         sns.lineplot(data=data)
+#         sns.lineplot(getdata=getdata)
 #
 #
 # # 参数拟合
-# def loss(point, real_patients, data, a, r_is, r_ia, t, alpha, i, c,
+# def loss(point, real_patients, getdata, a, r_is, r_ia, t, alpha, i, c,
 #          theta_s, theta_a, gamma_s1, gamma_a1, gamma_u, p, m):
 #     size = len(real_patients)
 #     beta_is, beta_ia = point
@@ -192,11 +192,11 @@
 #     def SEIR(use, y):
 #         print(y[2] + y[3] + y[4] + y[5] + y[6])
 #         # 易感者
-#         susceptible = - (r_is * beta_is * y[0] * y[2] + r_ia * beta_ia * y[0] * y[3]) / data["n"] \
+#         susceptible = - (r_is * beta_is * y[0] * y[2] + r_ia * beta_ia * y[0] * y[3]) / getdata["n"] \
 #                       + t * aa
 #         # 暴露者
 #         exposed = (r_is * beta_is * y[0] * y[2]
-#                    + r_ia * beta_ia * y[0] * y[3]) / data["n"] - y[1] / alpha + (1.0 - t) * aa
+#                    + r_ia * beta_ia * y[0] * y[3]) / getdata["n"] - y[1] / alpha + (1.0 - t) * aa
 #         # 感染者 中轻度患者
 #         infectious_s = c * y[1] / alpha - theta_s * y[2] / i
 #         # 感染者 无症状患者
@@ -215,9 +215,9 @@
 #                 quarantine_s, quarantine_a, recovered, dead]
 #
 #     solution = solve_ivp(SEIR, [0, size],
-#                          [data["susceptible"][0], data["exposed"][0],
-#                           data["infectious_s"][0], data["infectious_a"][0], data["infectious_u"][0],
-#                           data["quarantine_s"][0], data["quarantine_a"][0], data["recovered"][0], data["dead"][0]],
+#                          [getdata["susceptible"][0], getdata["exposed"][0],
+#                           getdata["infectious_s"][0], getdata["infectious_a"][0], getdata["infectious_u"][0],
+#                           getdata["quarantine_s"][0], getdata["quarantine_a"][0], getdata["recovered"][0], getdata["dead"][0]],
 #                          t_eval=np.arange(0, size, 1), vectorized=True)
 #     print('------')
 #     # # 这里的 real_patients 值是总值

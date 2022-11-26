@@ -29,7 +29,7 @@ seir_data_xian = {
 
 # 开始运行
 city_name = args.city_name
-real = pd.read_csv("data/" + city_name + ".csv", encoding='utf-8')
+real = pd.read_csv("getdata/" + city_name + ".csv", encoding='utf-8')
 names = ["date", "population shift", "patients"]
 population_shift = np.array(real['population shift'])
 population_shift = [float(i) for i in population_shift]
@@ -45,5 +45,5 @@ ans.train(0.001, 0.043)
 # 看看结果
 ans.data["real_patients"] = [int(i) for i in real_patients]
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-# print(ans.data)
+# print(ans.getdata)
 ans.drawGraph()

@@ -2,7 +2,7 @@ import xlrd2
 import os
 import datetime
 
-readfile = xlrd2.open_workbook(r"D:\code\github\SEIR-QD\data\天津西安OD数据.xlsx")
+readfile = xlrd2.open_workbook(r"天津西安数据.xlsx")
 print(readfile)
 
 # 获取sheet名称
@@ -22,14 +22,16 @@ patients = []
 # row = obj_sheet.nrows
 # col = obj_sheet.ncols
 
-file = os.getcwd()
+# 获取上层目录路径
+path1 = os.path.dirname(__file__)
+path2 = os.path.dirname(path1)
 
 # 获取 西安 单元格数据
-filename = file + '\\西安.csv'
+filename = path2 + '/data/xian.csv'
 for i in range(1, 20):
     row = obj_sheet.row_values(i)
     date = xlrd2.xldate_as_tuple(obj_sheet.cell_value(i, 0), readfile.datemode)
-    dates.append(datetime.date(*date[:3]).strftime('%Y%m%d'))
+    dates.append(datetime.date(*date[:3]).strftime('%Y/%m/%d'))
     population_shift.append(int(obj_sheet.cell_value(i, 1) - obj_sheet.cell_value(i, 2)))
 
     use = (patients[len(patients) - 1] if len(patients) != 0 else 0)

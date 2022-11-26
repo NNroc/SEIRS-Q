@@ -17,7 +17,7 @@ headers = {
 }
 response = requests.get(url, headers=headers)
 code_dic = json.loads(response.content)
-code_dic = code_dic['data']
+code_dic = code_dic['getdata']
 # 时间、人口（这里忽略不计）、新增
 dates = []
 population_shift = []
