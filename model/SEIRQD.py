@@ -150,7 +150,7 @@ class SEIRQD:
         data = pd.DataFrame(data={
             "真实患病人数": self.data["real_patients"], "预测患病人数": self.data["predict_total"]
         }, index=index)
-        plt.title('2021年 西安疫情情况预测对比图')
+        plt.title(self.data["city_name"]+'疫情情况预测对比图')
         plt.xlabel('时间')
         plt.ylabel('确诊人数')
         sns.lineplot(data=data)
@@ -159,7 +159,7 @@ class SEIRQD:
         # 设置日期的显示格式
         date_format = mpl.dates.DateFormatter("%m-%d")
         ax.xaxis.set_major_formatter(date_format)
-        plt.savefig('./getdata/result_{}.png'.format(self.data["city_name"]))
+        plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
 
     def loss(self):
         loss_val = 0
