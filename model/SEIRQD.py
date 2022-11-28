@@ -19,8 +19,8 @@ class SEIRQD:
         :param real_patients: 真实病例数
         :param r_is: 无症状感染者接易感人群的人数
         :param r_ia: 感染者接触易感人群的人数
-        :param beta_is: 有症状感染系数 0.05 基于SEIR模型的高校新冠肺炎疫情传播风险管控研究
-        :param beta_ia: 无症状感染系数 0.025 基于SEIR模型的高校新冠肺炎疫情传播风险管控研究
+        :param beta_is: 有症状感染系数 例：0.05 基于SEIR模型的高校新冠肺炎疫情传播风险管控研究
+        :param beta_ia: 无症状感染系数 例：0.025 基于SEIR模型的高校新冠肺炎疫情传播风险管控研究
         :param t: 流动人口中的易感者比例	初设0（有隔离政策）、0.00001（无隔离政策）
         :param alpha: 潜伏期	根据毒株而定
         :param i: 核酸检测频率(几天一次)，初设1-7天、0天（即不检测，自然发生对照组）
@@ -113,15 +113,16 @@ class SEIRQD:
     def train(self, beta_is=None, beta_ia=None):
         if beta_is is None or beta_ia is None:
             loss_val_min = float('inf')
-            for beta_is in np.arange(0.001, 0.300, 0.001):
-                for beta_ia in np.arange(0.001, 0.400, 0.001):
-                    if beta_ia * 1.3 < beta_is or beta_ia * 2 > beta_is:
+            for beta_is in np.arange(0.001, 0.900, 0.001):
+                for beta_ia in np.arange(0.001, 0.900, 0.001):
+                    if not 1.3 * beta_ia < beta_is < 2 * beta_ia:
                         continue
                     loss_val = getLoss(copy.deepcopy(self.data), self.a, self.time, self.real_patients,
                                        r_is=self.r_is, r_ia=self.r_ia, beta_is=beta_is, beta_ia=beta_ia,
                                        t=self.t, alpha=self.alpha, i=self.i, c=self.c,
                                        theta_s=self.theta_s, theta_a=self.theta_a,
-                                       gamma_s1=self.gamma_s1, gamma_a1=self.gamma_a1, gamma_u=self.gamma_u, p=self.p,
+                                       gamma_s1=self.gamma_s1, gamma_a1=self.gamma_a1, gamma_u=self.gamma_u,
+                                       p=self.p,
                                        m=self.m)
                     if loss_val_min > loss_val:
                         loss_val_min = loss_val
@@ -132,6 +133,7 @@ class SEIRQD:
             self.beta_is = beta_is
             self.beta_ia = beta_ia
 
+        print(self.beta_is, self.beta_ia)
         self.r_beta_is = self.r_is * self.beta_is
         self.r_beta_ia = self.r_ia * self.beta_ia
         self.run()
@@ -168,19 +170,20 @@ class SEIRQD:
         plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
 
     def loss_huber(self):
+        # 平方差损失函数
         # loss_val = np.sqrt(np.mean((self.data["predict_total"] - self.real_patients) ** 2))
+        # huber损失函数
         true = self.data["predict_total"]
         pred = self.real_patients
-        delta = 5
+        delta = 50
         loss = np.where(np.abs(true - pred) < delta, 0.5 * ((true - pred) ** 2),
                         delta * np.abs(true - pred) - 0.5 * (delta ** 2))
-        return np.sum(loss)
+        loss_val = np.sum(loss)
+        return loss_val
 
 
 def getLoss(data: dict, a: dict, time: dict, real_patients: dict,
-            r_is=20.0, r_ia=40.0, beta_is=0, beta_ia=0,
-            t=1.0, alpha=4.4, i=3.0, c=0.4,
-            theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064):
+            r_is, r_ia, beta_is, beta_ia, t, alpha, i, c, theta_s, theta_a, gamma_s1, gamma_a1, gamma_u, p, m):
     use = SEIRQD(data, a, time, real_patients,
                  r_is=r_is, r_ia=r_ia, beta_is=beta_is, beta_ia=beta_ia,
                  t=t, alpha=alpha, i=i, c=c,
