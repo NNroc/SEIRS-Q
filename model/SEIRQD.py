@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
+import xlwt
 
 
 class SEIRQD:
@@ -17,8 +18,8 @@ class SEIRQD:
         :param a: 人口净流动量 原始数据集
         :param time: 时间
         :param real_patients: 真实病例数
-        :param r_is: 无症状感染者接易感人群的人数
-        :param r_ia: 感染者接触易感人群的人数
+        :param r_is: 有症状感染者接易感人群的人数
+        :param r_ia: 无症状感染者接触易感人群的人数
         :param beta_is: 有症状感染系数 例：0.05 基于SEIR模型的高校新冠肺炎疫情传播风险管控研究
         :param beta_ia: 无症状感染系数 例：0.025 基于SEIR模型的高校新冠肺炎疫情传播风险管控研究
         :param t: 流动人口中的易感者比例	初设0（有隔离政策）、0.00001（无隔离政策）
@@ -165,9 +166,70 @@ class SEIRQD:
         ax.xaxis.set_major_formatter(date_format)
         plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
 
-    def saveResultAsExcel(self):
-        # todo 保存
-        plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
+    def saveResultToExcel(self):
+        xls = xlwt.Workbook()
+        sht1 = xls.add_sheet(self.data["city_name"])
+
+        # 设置字体格式
+        font0 = xlwt.Font()
+        font0.name = "Times New Roman"
+        font0.colour_index = 2
+        font0.bold = True  # 加粗
+        style0 = xlwt.XFStyle()
+
+        # 输入到 excel
+        sht1.write(0, 0, 'n', style0)
+        sht1.write(1, 0, self.data["n"])
+
+        sht1.write(0, 1, 'susceptible', style0)
+        for i in range(1, len(self.data["susceptible"]) + 1):
+            sht1.write(i, 1, self.data["susceptible"][i - 1])
+
+        sht1.write(0, 2, 'exposed', style0)
+        for i in range(1, len(self.data["exposed"]) + 1):
+            sht1.write(i, 2, self.data["exposed"][i - 1])
+
+        sht1.write(0, 3, 'infectious_s', style0)
+        for i in range(1, len(self.data["infectious_s"]) + 1):
+            sht1.write(i, 3, self.data["infectious_s"][i - 1])
+
+        sht1.write(0, 4, 'infectious_a', style0)
+        for i in range(1, len(self.data["infectious_a"]) + 1):
+            sht1.write(i, 4, self.data["infectious_a"][i - 1])
+
+        sht1.write(0, 5, 'infectious_u', style0)
+        for i in range(1, len(self.data["infectious_u"]) + 1):
+            sht1.write(i, 5, self.data["infectious_u"][i - 1])
+
+        sht1.write(0, 6, 'quarantine_s', style0)
+        for i in range(1, len(self.data["quarantine_s"]) + 1):
+            sht1.write(i, 6, self.data["quarantine_s"][i - 1])
+
+        sht1.write(0, 7, 'quarantine_a', style0)
+        for i in range(1, len(self.data["quarantine_a"]) + 1):
+            sht1.write(i, 7, self.data["quarantine_a"][i - 1])
+
+        sht1.write(0, 8, 'recovered', style0)
+        for i in range(1, len(self.data["recovered"]) + 1):
+            sht1.write(i, 8, self.data["recovered"][i - 1])
+
+        sht1.write(0, 9, 'dead', style0)
+        for i in range(1, len(self.data["dead"]) + 1):
+            sht1.write(i, 9, self.data["dead"][i - 1])
+
+        sht1.write(0, 10, 'real_patients', style0)
+        for i in range(1, len(self.data["real_patients"]) + 1):
+            sht1.write(i, 10, self.data["real_patients"][i - 1])
+
+        sht1.write(0, 11, 'predict_total', style0)
+        for i in range(1, len(self.data["predict_total"]) + 1):
+            sht1.write(i, 11, self.data["predict_total"][i - 1])
+
+        sht1.write(0, 12, 'beta_is 有症状感染系数', style0)
+        sht1.write(1, 12, self.beta_is, style0)
+        sht1.write(0, 13, 'beta_ia 无症状感染系数', style0)
+        sht1.write(1, 13, self.beta_ia, style0)
+        xls.save('./data/result_{}.xls'.format(self.data["city_name"]))
 
     def loss_huber(self):
         # 平方差损失函数
@@ -175,7 +237,8 @@ class SEIRQD:
         # huber损失函数
         true = self.data["predict_total"]
         pred = self.real_patients
-        delta = 50
+        delta = sum(self.real_patients) / len(self.real_patients) * 0.1
+        # print("delta:", delta)
         loss = np.where(np.abs(true - pred) < delta, 0.5 * ((true - pred) ** 2),
                         delta * np.abs(true - pred) - 0.5 * (delta ** 2))
         loss_val = np.sum(loss)
