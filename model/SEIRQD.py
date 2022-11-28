@@ -113,8 +113,10 @@ class SEIRQD:
     def train(self, beta_is=None, beta_ia=None):
         if beta_is is None or beta_ia is None:
             loss_val_min = float('inf')
-            for beta_is in np.arange(0.001, 0.400, 0.001):
+            for beta_is in np.arange(0.001, 0.300, 0.001):
                 for beta_ia in np.arange(0.001, 0.400, 0.001):
+                    if beta_ia * 1.3 < beta_is or beta_ia * 2 > beta_is:
+                        continue
                     loss_val = getLoss(copy.deepcopy(self.data), self.a, self.time, self.real_patients,
                                        r_is=self.r_is, r_ia=self.r_ia, beta_is=beta_is, beta_ia=beta_ia,
                                        t=self.t, alpha=self.alpha, i=self.i, c=self.c,
@@ -125,7 +127,7 @@ class SEIRQD:
                         loss_val_min = loss_val
                         self.beta_is = beta_is
                         self.beta_ia = beta_ia
-                        print(self.beta_is, self.beta_ia, loss_val)
+                        # print(self.beta_is, self.beta_ia, loss_val)
         else:
             self.beta_is = beta_is
             self.beta_ia = beta_ia
@@ -150,7 +152,7 @@ class SEIRQD:
         data = pd.DataFrame(data={
             "真实患病人数": self.data["real_patients"], "预测患病人数": self.data["predict_total"]
         }, index=index)
-        plt.title(self.data["city_name"]+'疫情情况预测对比图')
+        plt.title(self.data["city_name"] + '疫情情况预测对比图')
         plt.xlabel('时间')
         plt.ylabel('确诊人数')
         sns.lineplot(data=data)
@@ -161,14 +163,18 @@ class SEIRQD:
         ax.xaxis.set_major_formatter(date_format)
         plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
 
-    def loss(self):
-        loss_val = 0
-        # for num in range(len(self.real_patients)):
-        #     print(loss_val, np.sqrt(np.mean((self.getdata["predict_total"][num] - self.real_patients[num]) ** 2)))
-        #     loss_val = loss_val + np.sqrt(np.mean((self.getdata["predict_total"][num] - self.real_patients[num]) ** 2))
+    def saveResultAsExcel(self):
+        # todo 保存
+        plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
 
-        loss_val = np.sqrt(np.mean((self.data["predict_total"] - self.real_patients) ** 2))
-        return loss_val
+    def loss_huber(self):
+        # loss_val = np.sqrt(np.mean((self.data["predict_total"] - self.real_patients) ** 2))
+        true = self.data["predict_total"]
+        pred = self.real_patients
+        delta = 5
+        loss = np.where(np.abs(true - pred) < delta, 0.5 * ((true - pred) ** 2),
+                        delta * np.abs(true - pred) - 0.5 * (delta ** 2))
+        return np.sum(loss)
 
 
 def getLoss(data: dict, a: dict, time: dict, real_patients: dict,
@@ -181,4 +187,4 @@ def getLoss(data: dict, a: dict, time: dict, real_patients: dict,
                  theta_s=theta_s, theta_a=theta_a,
                  gamma_s1=gamma_s1, gamma_a1=gamma_a1, gamma_u=gamma_u, p=p, m=m)
     use.run()
-    return use.loss()
+    return use.loss_huber()

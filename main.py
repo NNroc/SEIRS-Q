@@ -50,24 +50,26 @@ real_patients = np.array(real['patients'])
 
 ans = None
 if city_name == 'xian':
-    # 0.001, 0.043
     ans = SEIRQD(seir_data_xian, population_shift, time, real_patients,
                  r_is=20.0, r_ia=40.0, beta_is=0.046, beta_ia=0.023,
-                 t=1.0, alpha=4.4, i=3.0, c=0.4,
+                 t=1.0, alpha=4.4, i=3.0, c=0.35,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064)
 elif city_name == 'shanghai':
-    # 0.002 0.0270
     ans = SEIRQD(seir_data_shanghai, population_shift, time, real_patients,
+
                  r_is=20.0, r_ia=40.0, beta_is=0.046, beta_ia=0.023,
-                 t=1.0, alpha=4.4, i=3.0, c=0.4,
+                 t=1.0, alpha=4, i=2.0, c=0.25,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064)
 else:
-    assert ans is None
+    FileNotFoundError()
 
+# beta_is : beta_ia = 1.3~2 : 1
 ans.train()
 
 # 看看结果
 ans.data["real_patients"] = [int(i) for i in real_patients]
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-# print(ans.getdata)
 ans.drawGraph()
+# ans.saveResultAsExcel()
+
+# 绝对值和平方之前
