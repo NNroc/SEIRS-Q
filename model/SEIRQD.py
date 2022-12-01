@@ -152,9 +152,14 @@ class SEIRQD:
         # frameon: 是否显示边框
         plt.figure(figsize=size, dpi=dpi)
         index = pd.date_range(start=self.time[0], periods=len(self.time), name="时间")
-        data = pd.DataFrame(data={
-            "真实患病人数": self.data["real_patients"], "预测患病人数": self.data["predict_total"]
-        }, index=index)
+        if self.real_patients is not None:
+            data = pd.DataFrame(data={
+                "真实患病人数": self.data["real_patients"], "预测患病人数": self.data["predict_total"]
+            }, index=index)
+        else:
+            data = pd.DataFrame(data={
+                "预测患病人数": self.data["predict_total"]
+            }, index=index)
         plt.title(self.data["city_name"] + '疫情情况预测对比图')
         plt.xlabel('时间')
         plt.ylabel('确诊人数')
@@ -218,8 +223,9 @@ class SEIRQD:
             sht1.write(i, 9, self.data["dead"][i - 1])
 
         sht1.write(0, 10, 'real_patients', style0)
-        for i in range(1, len(self.data["real_patients"]) + 1):
-            sht1.write(i, 10, self.data["real_patients"][i - 1])
+        if self.real_patients is not None:
+            for i in range(1, len(self.data["real_patients"]) + 1):
+                sht1.write(i, 10, self.data["real_patients"][i - 1])
 
         sht1.write(0, 11, 'predict_total', style0)
         for i in range(1, len(self.data["predict_total"]) + 1):
