@@ -53,4 +53,4 @@ with open(filename, 'w', encoding='utf-8') as f:
     print(f)
     f.writelines('date,' + 'population shift,' + 'patients' + '\n')
     for i in range(len(dates)):
-        f.writelines((dates[i] + ',' + str(population_shift[i]) + ',' + str(patients[i])) + '\n')
+        f.writelines(dates[i] + ',' + str(population_shift[i]) + ',' + str(patients[i]) + '\n')

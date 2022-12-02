@@ -8,18 +8,18 @@ parser.add_argument('--city_name', type=str, default='beijing', help='To predict
 args = parser.parse_args()
 
 seir_data_beijing = {
-    "n": 0,  # 该城市人口总数
+    "n": 21890000,  # 该城市人口总数
     "city_name": "北京",  # 城市名称
     "susceptible": [21890000.0],  # 易感者
-    "exposed": [0.0],  # 暴露者
+    "exposed": [10.0],  # 暴露者
     "infectious_s": [0.0],  # 感染者 中轻度患者
-    "infectious_a": [3.0],  # 感染者 无症状患者
+    "infectious_a": [0.0],  # 感染者 无症状患者
     "infectious_u": [0.0],  # 感染者 重症状患者
     "quarantine_s": [0.0],  # 感染者 中轻度隔离患者
     "quarantine_a": [0.0],  # 感染者 无症状隔离患者
     "recovered": [0.0],  # 康复者
     "dead": [0.0],  # 死亡者
-    "predict_total": [3.0]  # 合计
+    "predict_total": [0.0]  # 合计
 }
 
 # 获取数据，开始运行
