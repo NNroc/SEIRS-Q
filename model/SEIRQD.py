@@ -171,7 +171,7 @@ class SEIRQD:
         ax.xaxis.set_major_formatter(date_format)
         plt.savefig(path.format(self.data["city_name"]))
 
-    def saveResultToExcel(self):
+    def saveResultToExcel(self, path='./data/result_{}.xls'):
         xls = xlwt.Workbook()
         sht1 = xls.add_sheet(self.data["city_name"])
 
@@ -235,7 +235,7 @@ class SEIRQD:
         sht1.write(1, 12, self.beta_is, style0)
         sht1.write(0, 13, 'beta_ia 无症状感染系数', style0)
         sht1.write(1, 13, self.beta_ia, style0)
-        xls.save('./data/result_{}.xls'.format(self.data["city_name"]))
+        xls.save(path.format(self.data["city_name"]))
 
     def loss_huber(self):
         # 平方差损失函数

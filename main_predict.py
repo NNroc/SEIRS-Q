@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import pandas as pd
 import argparse
@@ -31,25 +33,34 @@ population_shift = np.array(real['population shift'])
 population_shift = [float(i) for i in population_shift]
 time = np.array(real['date'])
 
+# ans = SEIRQD(seir_data_beijing, population_shift, time, None,
+#                  r_is=20.0, r_ia=40.0, beta_is=0.001, beta_ia=0.001,
+#                  t=0.0001, alpha=3, i=2.0, c=0.15,
+#                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.065, m=0.6)
+# ans.train(beta_is=0.126, beta_ia=0.063)
+# ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
+# ans.drawGraph(path='./data/result_test.png')
+# ans.saveResultToExcel(path='./data/result_test.xls')
+
 # 对照实验 t = 0.0001
-for num in range(8):
-    ans = SEIRQD(seir_data_beijing, population_shift, time, None,
+for num in range(1, 6):
+    ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=20.0, r_ia=40.0, beta_is=0.126, beta_ia=0.063,
                  t=0.0001, alpha=3.0, i=float(num), c=0.15,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.065, m=0.6)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-    ans.drawGraph(path='/result_{}_t=0.0001_i=' + str(num) + '.png')
-    ans.saveResultToExcel()
+    ans.drawGraph(path='./data/result_{}_t=0.0001_i=' + str(num) + '.png')
+    ans.saveResultToExcel(path='./data/result_{}_t=0.0001_i=' + str(num) + '.xls')
 
 # 对照实验 t = 0
-for num in range(8):
+for num in range(1, 8):
     population_shift = [0 for i in range(len(time))]
-    ans = SEIRQD(seir_data_beijing, population_shift, time, None,
+    ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=20.0, r_ia=40.0, beta_is=0.126, beta_ia=0.063,
                  t=0.0, alpha=3.0, i=float(num), c=0.15,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.065, m=0.6)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-    ans.drawGraph(path='/result_{}_t=0_i=' + str(num) + '.png')
-    ans.saveResultToExcel()
+    ans.drawGraph(path='./data/result_{}_t=0_i=' + str(num) + '.png')
+    ans.saveResultToExcel(path='./data/result_{}_t=0_i=' + str(num) + '.xls')
