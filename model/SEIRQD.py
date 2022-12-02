@@ -139,7 +139,7 @@ class SEIRQD:
         self.r_beta_ia = self.r_ia * self.beta_ia
         self.run()
 
-    def drawGraph(self, size=(8, 5), dpi=200):
+    def drawGraph(self, size=(8, 5), dpi=200, path='./data/result_{}.png'):
         sns.set()
         plt.rcParams['font.sans-serif'] = ['Microsoft Yahei']  # 显示中文-微软雅黑字体
         # figure(num=None, figsize=None, dpi=None, facecolor=None, edgecolor=None, frameon=True)
@@ -169,7 +169,7 @@ class SEIRQD:
         # 设置日期的显示格式
         date_format = mpl.dates.DateFormatter("%m-%d")
         ax.xaxis.set_major_formatter(date_format)
-        plt.savefig('./data/result_{}.png'.format(self.data["city_name"]))
+        plt.savefig(path.format(self.data["city_name"]))
 
     def saveResultToExcel(self):
         xls = xlwt.Workbook()

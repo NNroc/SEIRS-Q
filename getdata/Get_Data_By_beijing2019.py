@@ -72,10 +72,12 @@ while i < len(beijing_input) and j < len(beijing_output):
         dates.append(beijing_input[i].date.strftime('%Y/%m/%d'))
         population_shift.append(beijing_input[i].population_shift)
         i = i + 1
+        print("no input or output")
     elif beijing_input[i].date > beijing_output[i].date:
         dates.append(beijing_output[i].date.strftime('%Y/%m/%d'))
         population_shift.append(-beijing_output[i].population_shift)
         j = j + 1
+        print("no input or output")
     else:
         dates.append(beijing_input[i].date.strftime('%Y/%m/%d'))
         population_shift.append(beijing_input[i].population_shift - beijing_output[i].population_shift)
@@ -86,14 +88,17 @@ while i < len(beijing_input):
     dates.append(beijing_input[i].date.strftime('%Y/%m/%d'))
     population_shift.append(beijing_input[i].population_shift)
     i = i + 1
+    print("no input or output")
 
 while j < len(beijing_output):
     dates.append(beijing_output[i].date.strftime('%Y/%m/%d'))
     population_shift.append(-beijing_output[i].population_shift)
     j = j + 1
+    print("no input or output")
 
+patients = [0 for i in range(max(len(dates), len(population_shift)))]
 with open(filename, 'w', encoding='utf-8') as f:
     print(f)
-    f.writelines('date,' + 'population shift' + '\n')
+    f.writelines('date,' + 'population shift,' + 'patients' + '\n')
     for i in range(len(dates)):
-        f.writelines(dates[i] + ',' + str(population_shift[i]) + '\n')
+        f.writelines(dates[i] + ',' + str(population_shift[i]) + ',' + str(patients[i]) + '\n')
