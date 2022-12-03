@@ -70,4 +70,4 @@ ans.data["real_patients"] = [int(i) for i in real_patients]
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
 ans.drawGraph()
 ans.saveResultToExcel()
-print(ans.data)
+# print(ans.data)
