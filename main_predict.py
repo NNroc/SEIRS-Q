@@ -10,8 +10,6 @@ parser.add_argument('--city_name', type=str, default='beijing',
                     help='To predict the urban epidemic information by name')
 parser.add_argument('--folder', type=str, default='month2',
                     help='Data folder')
-# parser.add_argument('--t', type=float, default='1.0',
-#                     help='The proportion of vulnerable persons in floating population')
 args = parser.parse_args()
 
 seir_data_beijing = {
@@ -39,7 +37,7 @@ time = np.array(real['date'])
 folder = args.folder
 
 t = 0.9999
-for num in range(1, 8):
+for num in range(0, 8):
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
                  t=t, alpha=3.0, i=float(num), c=0.15,
@@ -50,12 +48,12 @@ for num in range(1, 8):
     ans.saveResultToExcel(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.xls')
 
 t = 1.0
-for num in range(1, 8):
+for num in range(0, 8):
     population_shift = [0 for i in range(len(time))]
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
                  t=t, alpha=3.0, i=float(num), c=0.15,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.00065, m=0.6)
+                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.00065, m=0.02)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
     ans.drawGraph(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')

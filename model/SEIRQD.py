@@ -56,6 +56,10 @@ class SEIRQD:
         self.p = p
         self.m = m
 
+        if self.i == 0:
+            self.theta_s = 0.0
+            self.theta_a = 0.0
+
     def run(self):
         for indx in range(len(self.time) - 1):
             # 易感者
@@ -65,6 +69,7 @@ class SEIRQD:
                           + self.data["susceptible"][indx]
             if susceptible <= 0.0:
                 susceptible = 0.0
+
             # 暴露者
             exposed = (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
                        + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
@@ -72,37 +77,69 @@ class SEIRQD:
                       + self.data["exposed"][indx]
             if exposed <= 0.0:
                 exposed = 0.0
+
             # 感染者 中轻度患者
-            infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
-                           - self.theta_s * self.data["infectious_s"][indx] / self.i \
-                           + self.data["infectious_s"][indx]
+            # i_0 核酸检测为0及不为0时的情况
+            if self.i == 0:
+                infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
+                               - self.data["infectious_s"][indx] / self.gamma_s1 \
+                               + self.data["infectious_s"][indx]
+            else:
+                infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
+                               - self.theta_s * self.data["infectious_s"][indx] / self.i \
+                               + self.data["infectious_s"][indx]
             if infectious_s <= 0.0:
                 infectious_s = 0.0
+
             # 感染者 无症状患者
-            infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
-                           - self.theta_a * self.data["infectious_a"][indx] / self.i \
-                           + self.data["infectious_s"][indx] \
-                           + self.data["infectious_a"][indx]
+            # i_0 核酸检测为0及不为0时的情况
+            if self.i == 0:
+                infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
+                               - self.data["infectious_a"][indx] / self.gamma_a1 \
+                               + self.data["infectious_a"][indx]
+            else:
+                infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
+                               - self.theta_a * self.data["infectious_a"][indx] / self.i \
+                               + self.data["infectious_a"][indx]
             if infectious_a <= 0.0:
                 infectious_a = 0.0
+
             # 感染者 重症状患者
-            infectious_u = self.p * self.data["quarantine_s"][indx] \
-                           - self.data["infectious_u"][indx] / self.gamma_u - self.m * self.data["infectious_u"][indx] \
-                           + self.data["infectious_u"][indx]
+            # i_0 核酸检测为0及不为0时的情况
+            if self.i == 0:
+                infectious_u = self.p * self.data["infectious_s"][indx] \
+                               - self.data["infectious_u"][indx] / self.gamma_u \
+                               - self.m * self.data["infectious_u"][indx] \
+                               + self.data["infectious_u"][indx]
+            else:
+                infectious_u = self.p * self.data["quarantine_s"][indx] \
+                               - self.data["infectious_u"][indx] / self.gamma_u \
+                               - self.m * self.data["infectious_u"][indx] \
+                               + self.data["infectious_u"][indx]
             if infectious_u <= 0.0:
                 infectious_u = 0.0
+
             # 感染者 中轻度隔离患者
-            quarantine_s = self.theta_s * self.data["infectious_s"][indx] / self.i \
-                           - self.p * self.data["quarantine_s"][indx] - self.data["quarantine_s"][indx] / self.gamma_s1 \
-                           + self.data["quarantine_s"][indx]
+            if self.i == 0:
+                quarantine_s = 0.0
+            else:
+                quarantine_s = self.theta_s * self.data["infectious_s"][indx] / self.i \
+                               - self.p * self.data["quarantine_s"][indx] - self.data["quarantine_s"][
+                                   indx] / self.gamma_s1 \
+                               + self.data["quarantine_s"][indx]
             if quarantine_s <= 0.0:
                 quarantine_s = 0.0
+
             # 感染者 无症状隔离患者
-            quarantine_a = self.theta_a * self.data["infectious_a"][indx] / self.i \
-                           - self.data["quarantine_a"][indx] / self.gamma_a1 \
-                           + self.data["quarantine_a"][indx]
+            if self.i == 0:
+                quarantine_a = 0.0
+            else:
+                quarantine_a = self.theta_a * self.data["infectious_a"][indx] / self.i \
+                               - self.data["quarantine_a"][indx] / self.gamma_a1 \
+                               + self.data["quarantine_a"][indx]
             if quarantine_a <= 0.0:
                 quarantine_a = 0.0
+
             # 康复者
             recovered = self.data["infectious_u"][indx] / self.gamma_u \
                         + self.data["quarantine_s"][indx] / self.gamma_s1 \
@@ -110,8 +147,10 @@ class SEIRQD:
                         + self.data["recovered"][indx]
             if recovered <= 0.0:
                 recovered = 0.0
+
             # 死亡者
-            dead = self.m * self.data["infectious_u"][indx] + self.data["dead"][indx]
+            dead = self.m * self.data["infectious_u"][indx] \
+                   + self.data["dead"][indx]
             if dead <= 0.0:
                 dead = 0.0
 
@@ -265,10 +304,10 @@ class SEIRQD:
         for i in range(1, len(self.a) + 1):
             sht1.write(i, 15, self.a[i - 1])
 
-        # sht1.write(0, 13, 'beta_is 有症状感染系数', style0)
-        # sht1.write(1, 13, self.beta_is, style0)
-        # sht1.write(0, 14, 'beta_ia 无症状感染系数', style0)
-        # sht1.write(1, 14, self.beta_ia, style0)
+        sht1.write(0, 16, 'beta_is 有症状感染系数', style0)
+        sht1.write(1, 16, self.beta_is, style0)
+        sht1.write(0, 17, 'beta_ia 无症状感染系数', style0)
+        sht1.write(1, 17, self.beta_ia, style0)
         xls.save(path.format(self.data["city_name"]))
 
     def loss_huber(self):
