@@ -8,6 +8,10 @@ from model.SEIRQD import SEIRQD
 parser = argparse.ArgumentParser()
 parser.add_argument('--city_name', type=str, default='beijing',
                     help='To predict the urban epidemic information by name')
+parser.add_argument('--folder', type=str, default='month2',
+                    help='Data folder')
+# parser.add_argument('--t', type=float, default='1.0',
+#                     help='The proportion of vulnerable persons in floating population')
 args = parser.parse_args()
 
 seir_data_beijing = {
@@ -27,34 +31,24 @@ seir_data_beijing = {
 
 # 获取数据，开始运行
 city_name = args.city_name
-real = pd.read_csv("data/" + city_name + ".csv", encoding='utf-8')
+real = pd.read_csv("./data/" + city_name + ".csv", encoding='utf-8')
 names = ["date", "population shift"]
 population_shift = np.array(real['population shift'])
 population_shift = [float(i) for i in population_shift]
 time = np.array(real['date'])
+folder = args.folder
 
-# ans = SEIRQD(seir_data_beijing, population_shift, time, None,
-#                  r_is=20.0, r_ia=40.0, beta_is=0.001, beta_ia=0.001,
-#                  t=0.0001, alpha=3, i=2.0, c=0.15,
-#                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.065, m=0.6)
-# ans.train(beta_is=0.126, beta_ia=0.063)
-# ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-# ans.drawGraph(path='./data/result_test.png')
-# ans.saveResultToExcel(path='./data/result_test.xls')
-
-# 对照实验 t = 0.9999
 t = 0.9999
 for num in range(1, 8):
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
                  t=t, alpha=3.0, i=float(num), c=0.15,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.00065, m=0.6)
+                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.000065, m=0.02)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-    # ans.drawGraph(path='./data/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')
-    ans.saveResultToExcel(path='./data/result_{}_t=' + str(t) + '_i=' + str(num) + '.xls')
+    ans.drawGraph(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')
+    ans.saveResultToExcel(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.xls')
 
-# 对照实验 t = 1
 t = 1.0
 for num in range(1, 8):
     population_shift = [0 for i in range(len(time))]
@@ -64,5 +58,5 @@ for num in range(1, 8):
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.00065, m=0.6)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-    # ans.drawGraph(path='./data/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')
-    ans.saveResultToExcel(path='./data/result_{}_t=' + str(t) + '_i=' + str(num) + '.xls')
+    ans.drawGraph(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')
+    ans.saveResultToExcel(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.xls')
