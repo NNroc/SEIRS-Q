@@ -249,10 +249,14 @@ class SEIRQD:
         for i in range(1, len(self.data["predict_total"]) + 1):
             sht1.write(i, 11, self.data["predict_total"][i - 1])
 
-        sht1.write(0, 12, 'beta_is 有症状感染系数', style0)
-        sht1.write(1, 12, self.beta_is, style0)
-        sht1.write(0, 13, 'beta_ia 无症状感染系数', style0)
-        sht1.write(1, 13, self.beta_ia, style0)
+        sht1.write(0, 12, 'date', style0)
+        for i in range(1, len(self.time) + 1):
+            sht1.write(i, 12, self.time[i - 1])
+
+        sht1.write(0, 13, 'beta_is 有症状感染系数', style0)
+        sht1.write(1, 13, self.beta_is, style0)
+        sht1.write(0, 14, 'beta_ia 无症状感染系数', style0)
+        sht1.write(1, 14, self.beta_ia, style0)
         xls.save(path.format(self.data["city_name"]))
 
     def loss_huber(self):
