@@ -63,39 +63,57 @@ class SEIRQD:
                              + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
                           self.data["n"] + self.t * self.a[indx] \
                           + self.data["susceptible"][indx]
+            if susceptible <= 0.0:
+                susceptible = 0.0
             # 暴露者
             exposed = (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
                        + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
                       self.data["n"] - self.data["exposed"][indx] / self.alpha + (1.0 - self.t) * self.a[indx] \
                       + self.data["exposed"][indx]
+            if exposed <= 0.0:
+                exposed = 0.0
             # 感染者 中轻度患者
             infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
                            - self.theta_s * self.data["infectious_s"][indx] / self.i \
                            + self.data["infectious_s"][indx]
+            if infectious_s <= 0.0:
+                infectious_s = 0.0
             # 感染者 无症状患者
             infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
                            - self.theta_a * self.data["infectious_a"][indx] / self.i \
                            + self.data["infectious_s"][indx] \
                            + self.data["infectious_a"][indx]
+            if infectious_a <= 0.0:
+                infectious_a = 0.0
             # 感染者 重症状患者
             infectious_u = self.p * self.data["quarantine_s"][indx] \
                            - self.data["infectious_u"][indx] / self.gamma_u - self.m * self.data["infectious_u"][indx] \
                            + self.data["infectious_u"][indx]
+            if infectious_u <= 0.0:
+                infectious_u = 0.0
             # 感染者 中轻度隔离患者
             quarantine_s = self.theta_s * self.data["infectious_s"][indx] / self.i \
                            - self.p * self.data["quarantine_s"][indx] - self.data["quarantine_s"][indx] / self.gamma_s1 \
                            + self.data["quarantine_s"][indx]
+            if quarantine_s <= 0.0:
+                quarantine_s = 0.0
             # 感染者 无症状隔离患者
             quarantine_a = self.theta_a * self.data["infectious_a"][indx] / self.i \
                            - self.data["quarantine_a"][indx] / self.gamma_a1 \
                            + self.data["quarantine_a"][indx]
+            if quarantine_a <= 0.0:
+                quarantine_a = 0.0
             # 康复者
             recovered = self.data["infectious_u"][indx] / self.gamma_u \
                         + self.data["quarantine_s"][indx] / self.gamma_s1 \
                         + self.data["quarantine_a"][indx] / self.gamma_a1 \
                         + self.data["recovered"][indx]
+            if recovered <= 0.0:
+                recovered = 0.0
             # 死亡者
             dead = self.m * self.data["infectious_u"][indx] + self.data["dead"][indx]
+            if dead <= 0.0:
+                dead = 0.0
 
             self.data["susceptible"].append(float(susceptible))
             self.data["exposed"].append(float(exposed))

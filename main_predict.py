@@ -45,9 +45,9 @@ time = np.array(real['date'])
 # 对照实验 t = 0.0001
 for num in range(1, 6):
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
-                 r_is=20.0, r_ia=40.0, beta_is=0.126, beta_ia=0.063,
-                 t=0.0001, alpha=3.0, i=float(num), c=0.15,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.065, m=0.6)
+                 r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
+                 t=0.00001, alpha=3.0, i=float(num), c=0.15,
+                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.00065, m=0.6)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
     ans.drawGraph(path='./data/result_{}_t=0.0001_i=' + str(num) + '.png')
@@ -57,9 +57,9 @@ for num in range(1, 6):
 for num in range(1, 8):
     population_shift = [0 for i in range(len(time))]
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
-                 r_is=20.0, r_ia=40.0, beta_is=0.126, beta_ia=0.063,
+                 r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
                  t=0.0, alpha=3.0, i=float(num), c=0.15,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.065, m=0.6)
+                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.00065, m=0.6)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
     ans.drawGraph(path='./data/result_{}_t=0_i=' + str(num) + '.png')
