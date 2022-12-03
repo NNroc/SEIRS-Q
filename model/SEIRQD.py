@@ -253,10 +253,22 @@ class SEIRQD:
         for i in range(1, len(self.time) + 1):
             sht1.write(i, 12, self.time[i - 1])
 
-        sht1.write(0, 13, 'beta_is 有症状感染系数', style0)
-        sht1.write(1, 13, self.beta_is, style0)
-        sht1.write(0, 14, 'beta_ia 无症状感染系数', style0)
-        sht1.write(1, 14, self.beta_ia, style0)
+        sht1.write(0, 13, '每日新增患者', style0)
+        sht1.write(1, 13, 0, style0)
+        for i in range(2, len(self.data["predict_total"]) + 1):
+            sht1.write(i, 13, self.data["predict_total"][i - 1] - self.data["predict_total"][i - 2])
+        sht1.write(0, 14, '每日新增重症', style0)
+        sht1.write(1, 14, 0, style0)
+        for i in range(2, len(self.data["infectious_u"]) + 1):
+            sht1.write(i, 14, int(self.data["infectious_u"][i - 1] - self.data["infectious_u"][i - 2]))
+        sht1.write(0, 15, '每日净人口流动', style0)
+        for i in range(1, len(self.a) + 1):
+            sht1.write(i, 15, self.a[i - 1])
+
+        # sht1.write(0, 13, 'beta_is 有症状感染系数', style0)
+        # sht1.write(1, 13, self.beta_is, style0)
+        # sht1.write(0, 14, 'beta_ia 无症状感染系数', style0)
+        # sht1.write(1, 14, self.beta_ia, style0)
         xls.save(path.format(self.data["city_name"]))
 
     def loss_huber(self):
