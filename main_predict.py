@@ -24,7 +24,8 @@ seir_data_beijing = {
     "quarantine_a": [0.0],  # 感染者 无症状隔离患者
     "recovered": [0.0],  # 康复者
     "dead": [0.0],  # 死亡者
-    "predict_total": [0.0]  # 合计
+    "predict_total": [0.0],  # 预测的患者 重症状患者+中轻度隔离患者+无症状隔离患者
+    "predict_all": [0.0]  # 所有的患病情况
 }
 
 # 获取数据，开始运行

@@ -167,6 +167,13 @@ class SEIRQD:
             self.data["predict_total"].append(self.data["infectious_u"][indx + 1]
                                               + self.data["quarantine_s"][indx + 1]
                                               + self.data["quarantine_a"][indx + 1])
+            self.data["predict_all"].append(self.data["infectious_s"][indx + 1]
+                                            + self.data["infectious_a"][indx + 1]
+                                            + self.data["infectious_u"][indx + 1]
+                                            + self.data["quarantine_s"][indx + 1]
+                                            + self.data["quarantine_a"][indx + 1]
+                                            + self.data["recovered"][indx + 1]
+                                            + self.data["dead"][indx + 1])
 
     def train(self, beta_is=None, beta_ia=None):
         if beta_is is None or beta_ia is None:
@@ -292,26 +299,34 @@ class SEIRQD:
         for i in range(1, len(self.time) + 1):
             sht1.write(i, 12, self.time[i - 1])
 
-        sht1.write(0, 13, '每日新增患者', style0)
-        sht1.write(1, 13, 0, style0)
-        for i in range(2, len(self.data["predict_total"]) + 1):
-            sht1.write(i, 13, self.data["predict_total"][i - 1] - self.data["predict_total"][i - 2])
-        sht1.write(0, 14, '每日新增重症', style0)
-        sht1.write(1, 14, 0, style0)
-        for i in range(2, len(self.data["infectious_u"]) + 1):
-            sht1.write(i, 14, int(self.data["infectious_u"][i - 1] - self.data["infectious_u"][i - 2]))
-        sht1.write(0, 15, '每日新增死亡', style0)
-        sht1.write(1, 15, 0, style0)
-        for i in range(2, len(self.data["dead"]) + 1):
-            sht1.write(i, 15, int(self.data["dead"][i - 1] - self.data["dead"][i - 2]))
-        sht1.write(0, 16, '每日净人口流动', style0)
+        sht1.write(0, 13, '每日净人口流动', style0)
         for i in range(1, len(self.a) + 1):
-            sht1.write(i, 16, self.a[i - 1])
+            sht1.write(i, 13, self.a[i - 1])
 
-        sht1.write(0, 17, 'beta_is 有症状感染系数', style0)
-        sht1.write(1, 17, self.beta_is, style0)
-        sht1.write(0, 18, 'beta_ia 无症状感染系数', style0)
-        sht1.write(1, 18, self.beta_ia, style0)
+        sht1.write(0, 14, '每日新增患者', style0)
+        sht1.write(1, 14, 0, style0)
+        for i in range(2, len(self.data["predict_total"]) + 1):
+            sht1.write(i, 14, self.data["predict_total"][i - 1] - self.data["predict_total"][i - 2])
+        sht1.write(0, 15, '每日新增重症', style0)
+        sht1.write(1, 15, 0, style0)
+        for i in range(2, len(self.data["infectious_u"]) + 1):
+            sht1.write(i, 15, int(self.data["infectious_u"][i - 1]) - int(self.data["infectious_u"][i - 2]))
+        sht1.write(0, 16, '每日新增死亡', style0)
+        sht1.write(1, 16, 0, style0)
+        for i in range(2, len(self.data["dead"]) + 1):
+            sht1.write(i, 16, int(self.data["dead"][i - 1]) - int(self.data["dead"][i - 2]))
+        sht1.write(0, 17, '每日新增确诊病例', style0)
+        sht1.write(1, 17, 0, style0)
+        for i in range(2, len(self.data["dead"]) + 1):
+            sht1.write(i, 17, int(self.data["predict_all"][i - 1]) - int(self.data["predict_all"][i - 2]))
+        sht1.write(0, 18, '累计确诊病例', style0)
+        for i in range(1, len(self.data["dead"]) + 1):
+            sht1.write(i, 18, int(self.data["predict_all"][i - 1]))
+
+        sht1.write(0, 19, 'beta_is 有症状感染系数', style0)
+        sht1.write(1, 19, self.beta_is, style0)
+        sht1.write(0, 20, 'beta_ia 无症状感染系数', style0)
+        sht1.write(1, 20, self.beta_ia, style0)
         xls.save(path.format(self.data["city_name"]))
 
     def loss_huber(self):

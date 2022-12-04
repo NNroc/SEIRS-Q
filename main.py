@@ -20,7 +20,8 @@ seir_data_xian = {
     "recovered": [0.0],  # 康复者
     "dead": [0.0],  # 死亡者
     "real_patients": [],  # 真实病例
-    "predict_total": [3.0]  # 合计
+    "predict_total": [3.0],  # 预测的患者 重症状患者+中轻度隔离患者+无症状隔离患者
+    "predict_all": [3.0]  # 所有的患病情况 中轻度患者+无症状患者+重症状患者+中轻度隔离患者+无症状隔离患者+康复者+死亡者
 }
 
 seir_data_shanghai = {
@@ -36,7 +37,8 @@ seir_data_shanghai = {
     "recovered": [0.0],  # 康复者
     "dead": [0.0],  # 死亡者
     "real_patients": [],  # 真实病例
-    "predict_total": [2.0]  # 合计
+    "predict_total": [2.0],  # 预测的患者 重症状患者+中轻度隔离患者+无症状隔离患者
+    "predict_all": [2.0]  # 所有的患病情况 中轻度患者+无症状患者+重症状患者+中轻度隔离患者+无症状隔离患者+康复者+死亡者
 }
 
 # 获取数据，开始运行
@@ -68,6 +70,7 @@ ans.train()
 # 看看结果
 ans.data["real_patients"] = [int(i) for i in real_patients]
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
+ans.data["predict_all"] = [int(i) for i in ans.data["predict_all"]]
 ans.drawGraph()
 ans.saveResultToExcel()
 # print(ans.data)

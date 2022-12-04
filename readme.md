@@ -8,5 +8,5 @@ python main.py --city_name=shanghai
 python main_predict.py --city_name=beijing --folder=month2
 python main_predict.py --city_name=beijing_year --folder=year
 
-使用python3.9读取excel时报错AttributeError: 'ElementTree' object has no attribute 'getiterator'
+在使用python3.9读取excel时可能会有如下报错：AttributeError: 'ElementTree' object has no attribute 'getiterator'
 需要修改python\Lib\site-packages\xlrd下的xlsx.py文件两个地方266行和316行的的getiterator()改成iter()。
