@@ -83,6 +83,7 @@ class SEIRQD:
             if self.i == 0:
                 infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
                                - self.data["infectious_s"][indx] / self.gamma_s1 \
+                               - self.p * self.data["infectious_s"][indx] \
                                + self.data["infectious_s"][indx]
             else:
                 infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
@@ -141,10 +142,16 @@ class SEIRQD:
                 quarantine_a = 0.0
 
             # 康复者
-            recovered = self.data["infectious_u"][indx] / self.gamma_u \
-                        + self.data["quarantine_s"][indx] / self.gamma_s1 \
-                        + self.data["quarantine_a"][indx] / self.gamma_a1 \
-                        + self.data["recovered"][indx]
+            if self.i == 0:
+                recovered = self.data["infectious_u"][indx] / self.gamma_u \
+                            + self.data["infectious_s"][indx] / self.gamma_s1 \
+                            + self.data["infectious_a"][indx] / self.gamma_a1 \
+                            + self.data["recovered"][indx]
+            else:
+                recovered = self.data["infectious_u"][indx] / self.gamma_u \
+                            + self.data["quarantine_s"][indx] / self.gamma_s1 \
+                            + self.data["quarantine_a"][indx] / self.gamma_a1 \
+                            + self.data["recovered"][indx]
             if recovered <= 0.0:
                 recovered = 0.0
 
