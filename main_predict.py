@@ -42,7 +42,7 @@ for num in range(0, 8):
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
                  t=t, alpha=3.0, i=float(num), c=0.15,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.000065, m=0.02)
+                 theta_s=0.8, theta_a=0.6, gamma_s1=7.0, gamma_a1=7.0, gamma_u=15.0, p=0.00009, m=0.0247)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
     ans.drawGraph(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')
@@ -54,7 +54,7 @@ for num in range(0, 8):
     ans = SEIRQD(copy.deepcopy(seir_data_beijing), population_shift, time, None,
                  r_is=10.0, r_ia=20.0, beta_is=0.126, beta_ia=0.063,
                  t=t, alpha=3.0, i=float(num), c=0.15,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=30.0, p=0.000065, m=0.02)
+                 theta_s=0.8, theta_a=0.6, gamma_s1=7.0, gamma_a1=7.0, gamma_u=15.0, p=0.00009, m=0.0247)
     ans.train(beta_is=0.126, beta_ia=0.063)
     ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
     ans.drawGraph(path='./data/' + folder + '/result_{}_t=' + str(t) + '_i=' + str(num) + '.png')
