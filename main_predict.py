@@ -12,20 +12,21 @@ parser.add_argument('--folder', type=str, default='month2',
                     help='Data folder')
 args = parser.parse_args()
 
+# 新十条2022年12月7日数据
 seir_data_beijing = {
     "n": 21890000,  # 该城市人口总数
     "city_name": "北京",  # 城市名称
-    "susceptible": [21890000.0],  # 易感者
-    "exposed": [10.0],  # 暴露者
-    "infectious_s": [0.0],  # 感染者 中轻度患者
-    "infectious_a": [0.0],  # 感染者 无症状患者
+    "susceptible": [21874977.0],  # 易感者
+    "exposed": [67780.0],  # 暴露者
+    "infectious_s": [1170.0],  # 感染者 中轻度患者
+    "infectious_a": [2804.0],  # 感染者 无症状患者
     "infectious_u": [0.0],  # 感染者 重症状患者
     "quarantine_s": [0.0],  # 感染者 中轻度隔离患者
     "quarantine_a": [0.0],  # 感染者 无症状隔离患者
-    "recovered": [0.0],  # 康复者
-    "dead": [0.0],  # 死亡者
+    "recovered": [11036.0],  # 康复者
+    "dead": [13.0],  # 死亡者
     "predict_total": [0.0],  # 预测的患者 重症状患者+中轻度隔离患者+无症状隔离患者
-    "predict_all": [0.0]  # 所有的患病情况
+    "predict_all": [15023.0]  # 所有的患病情况
 }
 
 # 获取数据，开始运行

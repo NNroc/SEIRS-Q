@@ -311,21 +311,25 @@ class SEIRQD:
             sht1.write(i, 13, self.a[i - 1])
 
         sht1.write(0, 14, '每日新增患者', style0)
-        sht1.write(1, 14, 0, style0)
+        sht1.write(1, 14, self.data["predict_total"][0], style0)
         for i in range(2, len(self.data["predict_total"]) + 1):
             sht1.write(i, 14, self.data["predict_total"][i - 1] - self.data["predict_total"][i - 2])
+
         sht1.write(0, 15, '每日新增重症', style0)
-        sht1.write(1, 15, 0, style0)
+        sht1.write(1, 15, self.data["infectious_u"][0], style0)
         for i in range(2, len(self.data["infectious_u"]) + 1):
             sht1.write(i, 15, int(self.data["infectious_u"][i - 1]) - int(self.data["infectious_u"][i - 2]))
+
         sht1.write(0, 16, '每日新增死亡', style0)
-        sht1.write(1, 16, 0, style0)
+        sht1.write(1, 16, self.data["dead"][0], style0)
         for i in range(2, len(self.data["dead"]) + 1):
             sht1.write(i, 16, int(self.data["dead"][i - 1]) - int(self.data["dead"][i - 2]))
+
         sht1.write(0, 17, '每日新增确诊病例', style0)
-        sht1.write(1, 17, 0, style0)
+        sht1.write(1, 17, self.data["predict_all"][0], style0)
         for i in range(2, len(self.data["dead"]) + 1):
             sht1.write(i, 17, int(self.data["predict_all"][i - 1]) - int(self.data["predict_all"][i - 2]))
+
         sht1.write(0, 18, '累计确诊病例', style0)
         for i in range(1, len(self.data["dead"]) + 1):
             sht1.write(i, 18, int(self.data["predict_all"][i - 1]))
