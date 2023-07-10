@@ -200,7 +200,7 @@ class SEIRQD:
                         loss_val_min = loss_val
                         self.beta_is = beta_is
                         self.beta_ia = beta_ia
-                        # print(self.beta_is, self.beta_ia, loss_val)
+                        print(self.beta_is, self.beta_ia, loss_val)
         else:
             self.beta_is = beta_is
             self.beta_ia = beta_ia
