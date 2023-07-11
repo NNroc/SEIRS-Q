@@ -9,7 +9,7 @@ import xlwt
 
 
 class SEIRQD:
-    def __init__(self, data: dict, a=None, time=None, real_patients=None,
+    def __init__(self, data: dict, a=None, time=dict, real_patients=None,
                  r_is=20.0, r_ia=40.0, beta_is=0.05, beta_ia=0.025,
                  t=1.0, alpha=4.4, c=0.4,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064,
@@ -37,6 +37,7 @@ class SEIRQD:
         :param m: 重症患者死亡率 6.4%
         """
         self.data = data
+        self.a = a
         self.time = time
         self.real_patients = real_patients
         self.r_is = r_is
@@ -47,6 +48,7 @@ class SEIRQD:
         self.r_beta_ia = self.r_ia * self.beta_ia
         self.alpha = alpha
         self.c = c
+        self.t = t
         self.theta_s = theta_s
         self.theta_a = theta_a
         self.gamma_s1 = gamma_s1
@@ -60,31 +62,37 @@ class SEIRQD:
     def run(self):
         for indx in range(len(self.time) - 1):
             # 易感者
-            susceptible = - (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
-                             + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
-                          self.data["n"] + self.al * self.data["recovered"][indx] + self.data["susceptible"][indx]
+            susceptible = max(- (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
+                                 + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
+                              self.data["n"] + self.data["susceptible"][indx], 0.0) \
+                          + self.al * self.data["recovered"][indx]
             # 暴露者
             exposed = (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
                        + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
                       self.data["n"] - self.data["exposed"][indx] / self.alpha + self.data["exposed"][indx]
+            exposed = max(exposed, 0.0)
             # 感染者 中轻度患者
             infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
                            - self.data["infectious_s"][indx] / self.gamma_s1 \
                            - self.data["infectious_s"][indx] * self.q \
                            + self.data["infectious_s"][indx]
+            infectious_s = max(infectious_s, 0.0)
             # 感染者 无症状患者
             infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
                            - self.data["infectious_a"][indx] / self.gamma_a1 \
                            + self.data["infectious_a"][indx]
+            infectious_a = max(infectious_a, 0.0)
             # 自我隔离者
             quarantine = self.q * self.data["infectious_s"][indx] - self.data["quarantine"][indx] / self.gamma_s1 \
                          + self.data["quarantine"][indx]
+            quarantine = max(quarantine, 0.0)
             # 康复者
             recovered = self.data["infectious_s"][indx] / self.gamma_s1 \
                         + self.data["infectious_a"][indx] / self.gamma_a1 \
                         + self.data["quarantine"][indx] / self.gamma_s1 \
                         - self.al * self.data["recovered"][indx] \
                         + self.data["recovered"][indx]
+            recovered = max(recovered, 0.0)
 
             self.data["susceptible"].append(float(susceptible))
             self.data["exposed"].append(float(exposed))
@@ -111,12 +119,11 @@ class SEIRQD:
                     if not 1.3 * beta_ia < beta_is < 2 * beta_ia:
                         continue
                     loss_val = getLoss(copy.deepcopy(self.data), self.a, self.time, self.real_patients,
-                                       r_is=self.r_is, r_ia=self.r_ia, beta_is=beta_is, beta_ia=beta_ia,
-                                       t=self.t, alpha=self.alpha, i=self.i, c=self.c,
-                                       theta_s=self.theta_s, theta_a=self.theta_a,
+                                       r_is=self.r_is, r_ia=self.r_ia, beta_is=beta_is, beta_ia=beta_ia, t=self.t,
+                                       alpha=self.alpha, c=self.c, theta_s=self.theta_s, theta_a=self.theta_a,
                                        gamma_s1=self.gamma_s1, gamma_a1=self.gamma_a1, gamma_u=self.gamma_u,
-                                       p=self.p,
-                                       m=self.m)
+                                       p=self.p, m=self.m, q=self.q, al=self.al)
+
                     if loss_val_min > loss_val:
                         loss_val_min = loss_val
                         self.beta_is = beta_is
@@ -248,11 +255,11 @@ class SEIRQD:
 
 
 def getLoss(data: dict, a: dict, time: dict, real_patients: dict,
-            r_is, r_ia, beta_is, beta_ia, t, alpha, i, c, theta_s, theta_a, gamma_s1, gamma_a1, gamma_u, p, m):
+            r_is, r_ia, beta_is, beta_ia, t, alpha, c, theta_s, theta_a, gamma_s1, gamma_a1, gamma_u, p, m, q, al):
     use = SEIRQD(data, a, time, real_patients,
                  r_is=r_is, r_ia=r_ia, beta_is=beta_is, beta_ia=beta_ia,
-                 t=t, alpha=alpha, i=i, c=c,
+                 t=t, alpha=alpha, c=c,
                  theta_s=theta_s, theta_a=theta_a,
-                 gamma_s1=gamma_s1, gamma_a1=gamma_a1, gamma_u=gamma_u, p=p, m=m)
+                 gamma_s1=gamma_s1, gamma_a1=gamma_a1, gamma_u=gamma_u, p=p, m=m, q=q, al=al)
     use.run()
     return use.loss_huber()
