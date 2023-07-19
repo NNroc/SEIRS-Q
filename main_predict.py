@@ -28,15 +28,16 @@ seir_data_china = {
     # "quarantine_a": [0.0],  # 感染者 无症状隔离患者
     "quarantine": [0.0],  # 自我隔离患者
     "recovered": [3767.0],  # 康复者
+    "real_patients": [0.0],  # is+ia
     "predict_total": [0.0],  # 预测的患者 重症状患者+中轻度隔离患者+无症状隔离患者
     # "predict_all": [15023.0]  # 所有的患病情况
 }
 
 # 获取数据，开始运行
-ans = SEIRQD(copy.deepcopy(seir_data_china), time=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-             r_is=60.0, r_ia=40.0, beta_is=0.5, beta_ia=0.5, alpha=3.0, c=0.7, q=0.03, al=0.0083,
+ans = SEIRQD(copy.deepcopy(seir_data_china), time=180,
+             r_is=10.0, r_ia=10.0, beta_is=0.5, beta_ia=0.4, alpha=3.0, c=0.7, q=0.03, al=0.02,
              gamma_s1=10.0, gamma_a1=7.0)
 ans.train()
 ans.data["predict_total"] = [int(i) for i in ans.data["predict_total"]]
-# ans.drawGraph()
+ans.drawGraph()
 ans.saveResultToExcel()

@@ -9,10 +9,10 @@ import xlwt
 
 
 class SEIRQD:
-    def __init__(self, data: dict, a=None, time=dict, real_patients=None,
+    def __init__(self, data: dict, a=None, time=0, real_patients=None,
                  r_is=20.0, r_ia=40.0, beta_is=0.05, beta_ia=0.025,
                  t=1.0, alpha=4.4, c=0.4,
-                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064,
+                 theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=7.0, gamma_u=10.0, p=0.15, m=0.064,
                  al=0, q=0.2):
         """
         :param data: SEIR
@@ -59,13 +59,25 @@ class SEIRQD:
         self.al = al
         self.q = q
 
+    def get_al(self, time):
+        l = [0, 160, 310, 450, 580, 700, 810, 910, 1000, 1080]
+        num = 0
+        for i in l:
+            if time > i:
+                num += 1
+        if l[num] - time > 40:
+            return 0
+        else:
+            return self.al - num * 0.0005
+
     def run(self):
-        for indx in range(len(self.time) - 1):
+        for indx in range(self.time - 1):
+            al = self.get_al(indx)
             # 易感者
             susceptible = max(- (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
                                  + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
                               self.data["n"] + self.data["susceptible"][indx], 0.0) \
-                          + self.al * self.data["recovered"][indx]
+                          + al * self.data["recovered"][indx]
             # 暴露者
             exposed = (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
                        + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
@@ -90,7 +102,7 @@ class SEIRQD:
             recovered = self.data["infectious_s"][indx] / self.gamma_s1 \
                         + self.data["infectious_a"][indx] / self.gamma_a1 \
                         + self.data["quarantine"][indx] / self.gamma_s1 \
-                        - self.al * self.data["recovered"][indx] \
+                        - al * self.data["recovered"][indx] \
                         + self.data["recovered"][indx]
             recovered = max(recovered, 0.0)
 
@@ -101,8 +113,13 @@ class SEIRQD:
             self.data["quarantine"].append(float(quarantine))
             self.data["recovered"].append(float(recovered))
 
+            self.data["real_patients"].append(self.data["infectious_a"][indx + 1]
+                                              + self.data["infectious_s"][indx + 1])
+
             self.data["predict_total"].append(self.data["infectious_a"][indx + 1]
-                                              + self.data["quarantine"][indx + 1])
+                                              + self.data["infectious_s"][indx + 1]
+                                              + self.data["quarantine"][indx + 1]
+                                              + self.data["recovered"][indx + 1])
 
             # self.data["predict_all"].append(self.data["susceptible"][indx + 1]
             #                                 + self.data["exposed"][indx + 1]
@@ -147,15 +164,10 @@ class SEIRQD:
         # edgecolor: 边框颜色
         # frameon: 是否显示边框
         plt.figure(figsize=size, dpi=dpi)
-        index = pd.date_range(start=self.time[0], periods=len(self.time), name="时间")
-        if self.real_patients is not None:
-            data = pd.DataFrame(data={
-                "真实患病人数": self.data["real_patients"], "预测患病人数": self.data["predict_total"]
-            }, index=index)
-        else:
-            data = pd.DataFrame(data={
-                "预测患病人数": self.data["predict_total"]
-            }, index=index)
+        index = pd.date_range(start='20221207', periods=self.time, name="时间")
+        data = pd.DataFrame(data={
+            "真实患病人数": self.data["real_patients"]
+        }, index=index)
         plt.title(self.data["city_name"] + '疫情情况预测对比图')
         plt.xlabel('时间')
         plt.ylabel('确诊人数')
@@ -206,9 +218,10 @@ class SEIRQD:
         for i in range(1, len(self.data["recovered"]) + 1):
             sht1.write(i, 6, self.data["recovered"][i - 1])
 
-        # sht1.write(0, 6, 'date', style0)
-        # for i in range(1, len(self.time) + 1):
-        #     sht1.write(i, 6, self.time[i - 1])
+        sht1.write(0, 7, 'predict_total', style0)
+        for i in range(1, len(self.data["predict_total"]) + 1):
+            sht1.write(i, 7, self.data["predict_total"][i - 1])
+
         #
         # sht1.write(0, 14, '每日新增患者', style0)
         # sht1.write(1, 14, self.data["predict_total"][0], style0)
