@@ -29,7 +29,7 @@ class SEIRQD:
         :param theta_s: 有症状核酸检出率 0.8
         :param theta_a: 无症状核酸检出率 0.6
         :param gamma_s1: 中轻度患者痊愈时间 10
-        :param gamma_a1: 无症状患者痊愈时间 10
+        :param gamma_a1: 无症状患者痊愈时间 7
         :param gamma_u: 重症患者接受治疗后的痊愈时间 10
         :param al: 抗体水平随时间变化的表达式
         :param q: 自我隔离比例
@@ -59,20 +59,33 @@ class SEIRQD:
         self.al = al
         self.q = q
 
-    def get_al(self, time):
+    def get_val(self, time):
         l = [0, 160, 310, 450, 580, 700, 810, 910, 1000, 1080]
+        gamma_s1 = self.gamma_s1
+        gamma_a1 = self.gamma_a1
+        beta_is = self.beta_is
+        beta_ia = self.beta_ia
         num = 0
         for i in l:
             if time > i:
                 num += 1
+        for _ in range(num - 1):
+            down = 1.0
+            gamma_s1 *= down
+            gamma_a1 *= down
+            down = 0.9
+            beta_is *= down
+            beta_ia *= down
         if l[num] - time > 40:
-            return 0
+            return 0, gamma_s1, gamma_a1, beta_is, beta_ia
         else:
-            return self.al - num * 0.0005
+            return self.al - num * 0.0005, gamma_s1, gamma_a1, beta_is, beta_ia
 
     def run(self):
         for indx in range(self.time - 1):
-            al = self.get_al(indx)
+            al, gamma_s1, gamma_a1, beta_is, beta_ia = self.get_val(indx)
+            self.r_beta_is = beta_is * self.r_is
+            self.r_beta_ia = beta_ia * self.r_ia
             # 易感者
             susceptible = max(- (self.r_beta_is * self.data["susceptible"][indx] * self.data["infectious_s"][indx]
                                  + self.r_beta_ia * self.data["susceptible"][indx] * self.data["infectious_a"][indx]) / \
@@ -85,23 +98,23 @@ class SEIRQD:
             exposed = max(exposed, 0.0)
             # 感染者 中轻度患者
             infectious_s = self.c * self.data["exposed"][indx] / self.alpha \
-                           - self.data["infectious_s"][indx] / self.gamma_s1 \
+                           - self.data["infectious_s"][indx] / gamma_s1 \
                            - self.data["infectious_s"][indx] * self.q \
                            + self.data["infectious_s"][indx]
             infectious_s = max(infectious_s, 0.0)
             # 感染者 无症状患者
             infectious_a = (1.0 - self.c) * self.data["exposed"][indx] / self.alpha \
-                           - self.data["infectious_a"][indx] / self.gamma_a1 \
+                           - self.data["infectious_a"][indx] / gamma_a1 \
                            + self.data["infectious_a"][indx]
             infectious_a = max(infectious_a, 0.0)
             # 自我隔离者
-            quarantine = self.q * self.data["infectious_s"][indx] - self.data["quarantine"][indx] / self.gamma_s1 \
+            quarantine = self.q * self.data["infectious_s"][indx] - self.data["quarantine"][indx] / gamma_s1 \
                          + self.data["quarantine"][indx]
             quarantine = max(quarantine, 0.0)
             # 康复者
-            recovered = self.data["infectious_s"][indx] / self.gamma_s1 \
-                        + self.data["infectious_a"][indx] / self.gamma_a1 \
-                        + self.data["quarantine"][indx] / self.gamma_s1 \
+            recovered = self.data["infectious_s"][indx] / gamma_s1 \
+                        + self.data["infectious_a"][indx] / gamma_a1 \
+                        + self.data["quarantine"][indx] / gamma_s1 \
                         - al * self.data["recovered"][indx] \
                         + self.data["recovered"][indx]
             recovered = max(recovered, 0.0)
@@ -147,7 +160,7 @@ class SEIRQD:
                         self.beta_ia = beta_ia
                         print(self.beta_is, self.beta_ia, loss_val)
 
-        print(self.beta_is, self.beta_ia)
+        # print(self.beta_is, self.beta_ia)
         self.r_beta_is = self.r_is * self.beta_is
         self.r_beta_ia = self.r_ia * self.beta_ia
         self.run()
