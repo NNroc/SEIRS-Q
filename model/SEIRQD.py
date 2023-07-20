@@ -70,7 +70,7 @@ class SEIRQD:
             if time > i:
                 num += 1
         for _ in range(num - 1):
-            down = 0.8
+            down = 1
             gamma_s1 *= down
             gamma_a1 *= down
             down = 0.5
