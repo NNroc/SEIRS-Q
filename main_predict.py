@@ -17,7 +17,7 @@ args = parser.parse_args()
 # 新十条2022年12月7日数据
 seir_data_china = {
     "n": 1400000000,  # 该城市人口总数
-    "city_name": "world",  # 城市名称
+    "city_name": "world",  # 城市名称 'world' in this represent 'China'
     "susceptible": [1400000000.0],  # 易感者
     "exposed": [0.0],  # 暴露者
     "infectious_s": [4079.0],  # 感染者 中轻度患者

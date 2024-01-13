@@ -19,7 +19,7 @@ python main.py --city_name=shanghai
 ```
 
 # Predict
+Predict the results of China
 ```
-python main_predict.py --city_name=beijing --folder=month2
-python main_predict.py --city_name=beijing_year --folder=year
+python main_predict.py
 ```
