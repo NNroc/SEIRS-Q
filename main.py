@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import argparse
-from model.SEIRQD import SEIRQD
+from model.SEIRSQ import SEIRSQ
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--city_name', type=str, default='xian', help='To predict the urban epidemic information by name')
@@ -52,12 +52,12 @@ real_patients = np.array(real['patients'])
 
 ans = None
 if city_name == 'xian':
-    ans = SEIRQD(seir_data_xian, population_shift, time, real_patients,
+    ans = SEIRSQ(seir_data_xian, population_shift, time, real_patients,
                  r_is=20.0, r_ia=40.0, beta_is=0.001, beta_ia=0.001,
                  t=1.0, alpha=4.4, i=3.0, c=0.35,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064)
 elif city_name == 'shanghai':
-    ans = SEIRQD(seir_data_shanghai, population_shift, time, real_patients,
+    ans = SEIRSQ(seir_data_shanghai, population_shift, time, real_patients,
                  r_is=20.0, r_ia=40.0, beta_is=0.001, beta_ia=0.001,
                  t=1.0, alpha=4, i=2.0, c=0.25,
                  theta_s=0.8, theta_a=0.6, gamma_s1=10.0, gamma_a1=10.0, gamma_u=10.0, p=0.15, m=0.064)

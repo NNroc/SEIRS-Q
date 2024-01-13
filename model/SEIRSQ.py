@@ -8,7 +8,7 @@ import seaborn as sns
 import xlwt
 
 
-class SEIRQD:
+class SEIRSQ:
     def __init__(self, data: dict, a=None, time=0, real_patients=None,
                  r_is=20.0, r_ia=40.0, beta_is=0.05, beta_ia=0.025,
                  t=1.0, alpha=4.4, c=0.4,
@@ -282,7 +282,7 @@ class SEIRQD:
 
 def getLoss(data: dict, a: dict, time: dict, real_patients: dict,
             r_is, r_ia, beta_is, beta_ia, t, alpha, c, theta_s, theta_a, gamma_s1, gamma_a1, gamma_u, p, m, q, al):
-    use = SEIRQD(data, a, time, real_patients,
+    use = SEIRSQ(data, a, time, real_patients,
                  r_is=r_is, r_ia=r_ia, beta_is=beta_is, beta_ia=beta_ia,
                  t=t, alpha=alpha, c=c,
                  theta_s=theta_s, theta_a=theta_a,

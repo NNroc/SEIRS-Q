@@ -3,7 +3,7 @@ import copy
 import numpy as np
 import pandas as pd
 import argparse
-from model.SEIRQD import SEIRQD
+from model.SEIRSQ import SEIRSQ
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--city_name', type=str, default='world',
@@ -34,7 +34,7 @@ seir_data_china = {
 }
 
 # 获取数据，开始运行
-ans = SEIRQD(copy.deepcopy(seir_data_china), time=1000,
+ans = SEIRSQ(copy.deepcopy(seir_data_china), time=1000,
              r_is=10.0, r_ia=10.0, beta_is=0.5, beta_ia=0.4, alpha=3.0, c=0.7, q=0.03, al=0.02,
              gamma_s1=10.0, gamma_a1=7.0)
 ans.train()
